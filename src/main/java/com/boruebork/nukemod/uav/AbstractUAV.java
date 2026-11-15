@@ -188,7 +188,7 @@ public abstract class AbstractUAV extends AbstractFixedWingAircraft {
 
     @Override
     protected Sticks serverSticks() {
-        Sticks pilot = super.serverSticks();                 // always call: it drains the input queue (see section 2)
+        Sticks pilot = super.serverSticks();
         return serverMode == PilotMode.PATROL ? patrolSticks() : pilot;
     }
 
@@ -197,27 +197,22 @@ public abstract class AbstractUAV extends AbstractFixedWingAircraft {
     private Sticks patrolSticks() {
         BlockPos c = getServerPatrolCenter();
         if (c == null) return Sticks.ZERO;
-
         double rx = getX() - (c.getX() + 0.5), rz = getZ() - (c.getZ() + 0.5);
         double rLen = Math.sqrt(rx * rx + rz * rz);
         if (rLen < 1e-3) { rx = PATROL_RADIUS; rz = 0; rLen = PATROL_RADIUS; }
         double ux = rx / rLen, uz = rz / rLen;
         double radialError = rLen - PATROL_RADIUS;
-
         double dx = -uz - ux * radialError * RADIAL_GAIN;
         double dz =  ux - uz * radialError * RADIAL_GAIN;
         double dLen = Math.sqrt(dx * dx + dz * dz);
         dx /= dLen; dz /= dLen;
-
         float desiredYaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
         float desiredPitch = Mth.clamp((float) (-(c.getY() + PATROL_ALT_AGL - getY()) * 4.0), -15f, 15f);
-
         float yaw   = Mth.clamp(Mth.wrapDegrees(desiredYaw - getYRot()) / 25f, -1f, 1f);
         float pitch = Mth.clamp(Mth.wrapDegrees(desiredPitch - getXRot()) / 25f, -1f, 1f);
         float boost = Mth.clamp((float) Math.abs(radialError) * 0.02f, 0f, 0.15f);
         float thr   = Mth.clamp((PATROL_CRUISE_THR + boost - throttle) * 3f, -1f, 1f);
-
         patrolAngle += PATROL_ORBIT_RATE;
-        return new Sticks(thr, pitch, 0f, yaw);              // Sticks(throttle, pitch, roll, yaw)
+        return new Sticks(thr, pitch, 0f, yaw);
     }
 }

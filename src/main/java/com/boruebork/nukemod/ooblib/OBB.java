@@ -18,8 +18,8 @@ import org.joml.Vector3f;
 public final class OBB {
 
     public final Vector3f center = new Vector3f();
-    public final Vector3f halfExtents = new Vector3f(); // half-size along local X/Y/Z
-    public final Quaternionf rotation = new Quaternionf(); // local -> world
+    public final Vector3f halfExtents = new Vector3f();
+    public final Quaternionf rotation = new Quaternionf();
 
     public OBB() {}
 

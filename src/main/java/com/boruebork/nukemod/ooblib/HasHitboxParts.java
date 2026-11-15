@@ -26,9 +26,7 @@ import java.util.function.BiConsumer;
  */
 public interface HasHitboxParts {
     default Entity self() { return (Entity) this; }
-
     Quaternionf getEntityRotation(); // world orientation of the entity's origin
-
     default List<OBB> computeWorldHitboxes() {
         List<HitboxPart> parts = HitboxDefinitions.get(self().getType());
         if (parts.isEmpty()) return List.of();
@@ -39,31 +37,20 @@ public interface HasHitboxParts {
         List<OBB> result = new ArrayList<>(parts.size());
 
         for (HitboxPart part : parts) {
-
-            // Hitbox position relative to the pivot.
             Vector3f localOffset = new Vector3f(part.localOffset())
                     .sub(part.localPivot());
-
-            // Rotate around the pivot.
             entityRot.transform(localOffset);
-
-            // Put it back relative to the pivot.
             localOffset.add(part.localPivot());
-
-            // Finally move it into world space.
             localOffset.add(entityPos);
-
             Quaternionf worldRot =
                     new Quaternionf(entityRot)
                             .mul(part.localRotation());
-
             result.add(new OBB(
                     localOffset,
                     new Vector3f(part.localHalfExtents()),
                     worldRot
             ));
         }
-
         return result;
     }
 

@@ -3,7 +3,6 @@ package com.boruebork.nukemod.ooblib;
 import com.boruebork.nukemod.aircraft.AbstractFixedWingAircraft;
 
 public class FixedWingClientManager {
-
     public static class PilotingClientState{
         public static AbstractFixedWingAircraft aircraft;
         public static float x;
